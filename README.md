@@ -6,7 +6,13 @@ An install-and-forget KISSy wrapper around your database dumper.
 
     rake db:dump
 
-It has no parameters and dumps the current database to standart output. 
+Without parameters the task dumps the current database to standard output.
+
+Pass a `TABLE_NAME` environment variable to dump a single table:
+
+    rake db:dump TABLE_NAME=locations
+
+There is also a symmetrical task, `rake db:restore`, which restores the database from standard input.
 
 ## Installation
 

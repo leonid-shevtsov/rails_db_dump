@@ -1,7 +1,10 @@
 namespace :db do
+  desc "Dump the database to standard output. Pass a TABLE_NAME environment variable to dump a single table"
   task :dump do
     require 'yaml'
     config = YAML.load_file(File.join(Rails.root,'config','database.yml'))[Rails.env]
+    table_name = ENV['TABLE_NAME']
+
     case config["adapter"]
     when /^mysql/
       args = {
@@ -13,6 +16,7 @@ namespace :db do
         'password'  => '--password'
       }.map { |opt, arg| "#{arg}=#{config[opt]}" if config[opt] }.compact
       args << config['database']
+      args << table_name unless table_name.blank?
 
       exec('mysqldump', *args)
 
@@ -21,16 +25,28 @@ namespace :db do
       ENV['PGHOST']     = config["host"] if config["host"]
       ENV['PGPORT']     = config["port"].to_s if config["port"]
       ENV['PGPASSWORD'] = config["password"].to_s if config["password"]
-      exec('pg_dump', config["database"])
+      if table_name.blank?
+        exec('pg_dump', config["database"])
+      else
+        exec('pg_dump', '-t', table_name, config["database"])
+      end
 
     when "sqlite"
+      raise 'Table dumping not supported with sqlite... yet' unless table_name.blank?
       exec('sqlite', config["database"], '.dump')
 
     when "sqlite3"
+      raise 'Table dumping not supported with sqlite... yet' unless table_name.blank?
       exec('sqlite3', config['database'], '.dump')
 
     else
       abort "Don't know how to dump #{config['database']}."
     end
+  end
+
+  desc "Restore the database from standard input."
+  task :restore do
+    # Doesn't get any simpler than that!
+    exec File.join(Rails.root, 'script', 'dbconsole'), '--include-password'
   end
 end

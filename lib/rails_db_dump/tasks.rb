@@ -47,6 +47,10 @@ namespace :db do
   desc "Restore the database from standard input."
   task :restore do
     # Doesn't get any simpler than that!
-    exec File.join(Rails.root, 'script', 'dbconsole'), '--include-password'
+    if Rails.version > '3'
+      exec 'rails', 'dbconsole', '--include-password'
+    else
+      exec File.join(Rails.root, 'script', 'dbconsole'), '--include-password'
+    end
   end
 end

@@ -18,7 +18,7 @@ There is also a symmetrical task, `rake db:restore`, which restores the database
 
 Rails 3: add `gem rails_db_dump` to your Gemfile.
 
-Rails 2.3: add the gem to your environment, then add `include 'rails_db_dump/tasks'` to your Rakefile
+Rails 2.3: add the gem to your environment, then add `require 'rails_db_dump/tasks'` to your Rakefile
 
 ## Requirements
 

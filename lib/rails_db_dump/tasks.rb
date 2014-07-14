@@ -2,7 +2,8 @@ namespace :db do
   desc "Dump the database to standard output. Pass a TABLE_NAME environment variable to dump a single table"
   task :dump do
     require 'yaml'
-    config = YAML.load_file(File.join(Rails.root,'config','database.yml'))[Rails.env]
+    db_config, env = YAML.load_file(File.join(Rails.root,'config','database.yml')), Rails.env
+    while (config = db_config[env]).is_a?(String) do; env = config; end
     table_name = ENV['TABLE_NAME']
 
     case config["adapter"]

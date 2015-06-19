@@ -1,8 +1,7 @@
 namespace :db do
   desc "Dump the database to standard output. Pass a TABLE_NAME environment variable to dump a single table"
-  task :dump do
-    require 'yaml'
-    config = YAML.load_file(File.join(Rails.root,'config','database.yml'))[Rails.env]
+  task :dump => :environment do
+    config = Rails.configuration.database_configuration[Rails.env]
     table_name = ENV['TABLE_NAME']
 
     case config["adapter"]
@@ -46,7 +45,6 @@ namespace :db do
 
   desc "Restore the database from standard input."
   task :restore do
-    # Doesn't get any simpler than that!
     if Rails.version > '3'
       exec 'rails', 'dbconsole', '--include-password'
     else
